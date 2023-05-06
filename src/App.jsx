@@ -2,8 +2,7 @@ import "./App.css";
 import Box from "./components/Box";
 import Graphs from "./components/Graphs";
 import CurrentTrades from "./components/CurrentTrades";
-
-function App() {
+function App() { 
   const fiveTabs = ["Hour", "Day", "Week", "Month", "YTD"];
   // This includes names of accounts
   const accounts = [
@@ -20,17 +19,17 @@ function App() {
   ];
   const trades = [
     {
-      type: "Buy",
-      profit: -40,
-      account: "abc",
-      order: "abc",
-      entryPrice: 150,
-      sl: 1,
-      tp: 1,
-      currentPrice: 100,
-      advisor: "Tim",
-      estimatedProfit: 30,
-      runningTime: 2,
+      type: "Buy",//type
+      profit: -40,//currentVolume
+      account: "abc",//client id
+      order: "abc",// id
+      entryPrice: 150,//open price
+      sl: 1,//stopLoss
+      tp: 1,//take profit
+      currentPrice: 100,// currentPrice
+      advisor: "Tim",//brokerComment
+      estimatedProfit: 30,//volume
+      runningTime: 2,//time
     },
     {
       type: "Sell",
@@ -53,11 +52,15 @@ function App() {
         <h1 className="font-bold text-5xl mb-7">Dashboard</h1>
         {/* First Row */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
+          
+          
           <Box
             title={"Profit"}
             data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
             tabs={fiveTabs}
           />
+
+
           <Box
             title={"PTS"}
             data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
