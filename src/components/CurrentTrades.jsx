@@ -2,12 +2,21 @@ import React, { useState } from "react";
 
 function CurrentTrades({ trades }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
+  console.log(trades.length);
+  if (trades.length == 0 || !trades)
+    return (
+      <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
+        <p>There are no current trades</p>
+      </div>
+    );
   return (
     <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
       <h2 className="font-semibold text-orange-400 text-4xl">Current Trades</h2>
       <h3 className="font-semibold text-2xl mt-2">Trade {selectedIndex + 1}</h3>
       <div className="flex space-x-2 items-center">
-        <p className="text-gray-900 font-semibold">Buy</p>
+        <p className="text-gray-900 font-semibold">
+          {trades[selectedIndex]?.type}
+        </p>
         <p
           className={`font-bold ${
             trades[selectedIndex].profit > 0 ? "text-green-500" : "text-red-600"
