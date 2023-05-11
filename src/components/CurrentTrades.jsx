@@ -2,7 +2,6 @@ import React, { useState } from "react";
 
 function CurrentTrades({ trades }) {
   const [selectedIndex, setSelectedIndex] = useState(0);
-  console.log(trades.length);
   if (trades.length == 0 || !trades)
     return (
       <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
@@ -15,7 +14,9 @@ function CurrentTrades({ trades }) {
       <h3 className="font-semibold text-2xl mt-2">Trade {selectedIndex + 1}</h3>
       <div className="flex space-x-2 items-center">
         <p className="text-gray-900 font-semibold">
-          {trades[selectedIndex]?.type}
+          {trades[selectedIndex]?.type === "POSITION_TYPE_BUY"
+            ? "Buying"
+            : "Selling"}
         </p>
         <p
           className={`font-bold ${
@@ -28,17 +29,17 @@ function CurrentTrades({ trades }) {
       <div className="mt-1 grid lg:grid-cols-3 text-gray-600">
         <p>
           <span className="font-medium">Account: </span>
-          {trades[selectedIndex].account}
+          {trades[selectedIndex].accountId}
         </p>
         <p>
           <span className="font-medium">Order: </span>
-          {trades[selectedIndex].order}
+          {trades[selectedIndex]._id}
         </p>
         <p>
           <span className="font-medium">Entry Price: </span>$
-          {trades[selectedIndex].entryPrice}
+          {trades[selectedIndex].openPrice}
         </p>
-        <p>
+        {/* <p>
           <span className="font-medium">S/L: </span>
           {trades[selectedIndex].sl}
         </p>
@@ -53,14 +54,14 @@ function CurrentTrades({ trades }) {
         <p>
           <span className="font-medium">Expert Advisor: </span>
           {trades[selectedIndex].advisor}
-        </p>
-        <p>
+        </p> */}
+        {/* <p>
           <span className="font-medium">Estimated Profit: </span>
           {trades[selectedIndex].estimatedProfit}
-        </p>
+        </p> */}
         <p>
           <span className="font-medium">Running Time in Trade: </span>
-          {trades[selectedIndex].runningTime}
+          {trades[selectedIndex].durationInMinutes} minutes
         </p>
       </div>
       <div className="flex mt-3 justify-center space-x-2">

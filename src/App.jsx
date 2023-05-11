@@ -2,266 +2,158 @@ import "./App.css";
 import Box from "./components/Box";
 import Graphs from "./components/Graphs";
 import CurrentTrades from "./components/CurrentTrades";
-import axios from "axios";
 import { useEffect, useState } from "react";
-
-const account = "186e316f-ee04-4ac9-8fc5-8f1b74887cc8";
-
-const lastYearProfit = async (config) => {
-  const lastYear = new Date();
-  lastYear.setFullYear(lastYear.getFullYear() - 1);
-  const isoLastYear = lastYear.toISOString();
-  const now = new Date();
-  const isoDateTime = now.toISOString();
-  console.log(isoDateTime, isoLastYear);
-  // the starting and last year will be replace this this last year value is for testing purpose
-  await axios
-    .get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-orders/time/${isoLastYear}/${isoDateTime}`,
-      config
-    )
-    .then((res) => {
-      // Calculate profit/loss for each order
-      res.data.forEach((order) => {
-        if (order.type === "ORDER_TYPE_BUY") {
-          order.profit = (order.closePrice - order.openPrice) * order.volume;
-        } else if (order.type === "ORDER_TYPE_SELL") {
-          order.profit = (order.openPrice - order.closePrice) * order.volume;
-        }
-      });
-      // Calculate total profit/loss for all orders
-      const totalProfit = res.data.reduce(
-        (acc, order) => acc + (order.profit || 0),
-        0
-      );
-      console.log("Last year Total profit:", totalProfit);
-      return totalProfit;
-    });
-};
-const lastMonthProfit = async (config) => {
-  const lastMonth = new Date();
-  lastMonth.setMonth(lastMonth.getMonth() - 1);
-  const isoLastMonth = lastMonth.toISOString();
-  const now = new Date();
-  const isoDateTime = now.toISOString();
-  console.log(isoDateTime, isoLastMonth);
-  // the starting and last year will be replace this this last year value is for testing purpose
-  await axios
-    .get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-orders/time/${lastMonth}/${isoDateTime}`,
-      config
-    )
-    .then((res) => {
-      // Calculate profit/loss for each order
-      res.data.forEach((order) => {
-        if (order.type === "ORDER_TYPE_BUY") {
-          order.profit = (order.closePrice - order.openPrice) * order.volume;
-        } else if (order.type === "ORDER_TYPE_SELL") {
-          order.profit = (order.openPrice - order.closePrice) * order.volume;
-        }
-      });
-      // Calculate total profit/loss for all orders
-      const totalProfit = res.data.reduce(
-        (acc, order) => acc + (order.profit || 0),
-        0
-      );
-      console.log("Last Month Total profit:", totalProfit);
-      return totalProfit;
-    });
-};
-
-const lastHourProfit = async (config) => {
-  const lastHour = new Date();
-  lastHour.setHours(lastHour.getHours() - 1);
-  const isoLastHour = lastHour.toISOString();
-  const now = new Date();
-  const isoDateTime = now.toISOString();
-  console.log(isoDateTime, isoLastHour);
-  await axios
-    .get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-orders/time/${isoLastHour}/${isoDateTime}`,
-      config
-    )
-    .then((res) => {
-      // Calculate profit/loss for each order
-      res.data.forEach((order) => {
-        if (order.type === "ORDER_TYPE_BUY") {
-          order.profit = (order.closePrice - order.openPrice) * order.volume;
-        } else if (order.type === "ORDER_TYPE_SELL") {
-          order.profit = (order.openPrice - order.closePrice) * order.volume;
-        }
-      });
-      // Calculate total profit/loss for all orders
-      const totalProfit = res.data.reduce(
-        (acc, order) => acc + (order.profit || 0),
-        0
-      );
-      console.log("Last Hour Total profit:", totalProfit);
-      return totalProfit;
-    });
-};
-const lastWeekProfit = async (config) => {
-  const lastWeek = new Date();
-  lastWeek.setDate(lastWeek.getDate() - 7);
-  const isoLastWeek = lastWeek.toISOString();
-  const now = new Date();
-  const isoDateTime = now.toISOString();
-  console.log(isoDateTime, isoLastWeek);
-  const response = await axios.get(
-    `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-orders/time/${isoLastWeek}/${isoDateTime}`,
-    config
-  );
-  const orders = response.data;
-  // Calculate profit/loss for each order
-  orders.forEach((order) => {
-    if (order.type === "ORDER_TYPE_BUY") {
-      order.profit = (order.closePrice - order.openPrice) * order.volume;
-    } else if (order.type === "ORDER_TYPE_SELL") {
-      order.profit = (order.openPrice - order.closePrice) * order.volume;
-    }
-  });
-  // Calculate total profit/loss for all orders
-  const totalProfit = orders.reduce(
-    (acc, order) => acc + (order.profit || 0),
-    0
-  );
-  console.log("Last week total profit:", totalProfit);
-  return totalProfit;
-};
-const lastDayProfit = async (config) => {
-  const lastDay = new Date();
-  lastDay.setDate(lastDay.getDate() - 1);
-  const isoLastDay = lastDay.toISOString();
-  const now = new Date();
-  const isoDateTime = now.toISOString();
-  console.log(isoDateTime, isoLastDay);
-
-  try {
-    const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-orders/time/${isoDateTime}/${isoLastDay}`,
-      config
-    );
-    // Calculate profit/loss for each order
-    response.data.forEach((order) => {
-      if (order.type === "ORDER_TYPE_BUY") {
-        order.profit = (order.closePrice - order.openPrice) * order.volume;
-      } else if (order.type === "ORDER_TYPE_SELL") {
-        order.profit = (order.openPrice - order.closePrice) * order.volume;
-      }
-    });
-    // Calculate total profit/loss for all orders
-    const totalProfit = response.data.reduce(
-      (acc, order) => acc + (order.profit || 0),
-      0
-    );
-    console.log("Last day total profit:", totalProfit);
-    return totalProfit;
-  } catch (error) {
-    console.log(error);
-  }
-};
+import {
+  getAccountInfo,
+  getBestTimeFrame,
+  getTrades,
+  lastDayProfit,
+  lastHourProfit,
+  lastMonthProfit,
+  lastWeekProfit,
+  lastYearProfit,
+} from "./services/BackendService";
 
 function App() {
-  const [trades, setTrades] = useState([
-    {
-      type: "Buy", //type
-      profit: -40, //currentVolume
-      account: "abc", //client id
-      order: "abc", // id
-      entryPrice: 150, //open price
-      sl: 1, //stopLoss
-      tp: 1, //take profit
-      currentPrice: 100, // currentPrice
-      advisor: "Tim", //brokerComment
-      estimatedProfit: 30, //volume
-      runningTime: 2, //time
-    },
-    {
-      type: "Sell",
-      profit: 40,
-      account: "abc",
-      order: "abc",
-      entryPrice: 150,
-      sl: 1,
-      tp: 1,
-      currentPrice: 100,
-      advisor: "Tim",
-      estimatedProfit: 30,
-      runningTime: 2,
-    },
-  ]);
-  console.log(trades);
-  let token =
-    "eyJhbGciOiJSUzUxMiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwNDc3MzIwZWJhZTk5YjhhNjMyYzZjNzdlMjc3ZTZlMSIsInBlcm1pc3Npb25zIjpbXSwiYWNjZXNzUnVsZXMiOlt7Im1ldGhvZHMiOlsidHJhZGluZy1hY2NvdW50LW1hbmFnZW1lbnQtYXBpOnJlc3Q6cHVibGljOio6KiJdLCJyb2xlcyI6WyJyZWFkZXIiLCJ3cml0ZXIiXSwicmVzb3VyY2VzIjpbIio6JFVTRVJfSUQkOioiXX0seyJtZXRob2RzIjpbIm1ldGFhcGktYXBpOnJlc3Q6cHVibGljOio6KiJdLCJyb2xlcyI6WyJyZWFkZXIiLCJ3cml0ZXIiXSwicmVzb3VyY2VzIjpbIio6JFVTRVJfSUQkOioiXX0seyJtZXRob2RzIjpbIm1ldGFhcGktYXBpOndzOnB1YmxpYzoqOioiXSwicm9sZXMiOlsicmVhZGVyIiwid3JpdGVyIl0sInJlc291cmNlcyI6WyIqOiRVU0VSX0lEJDoqIl19LHsibWV0aG9kcyI6WyJtZXRhYXBpLWFwaTp3czpwdWJsaWM6KjoqIl0sInJvbGVzIjpbInJlYWRlciIsIndyaXRlciJdLCJyZXNvdXJjZXMiOlsiKjokVVNFUl9JRCQ6KiJdfSx7Im1ldGhvZHMiOlsibWV0YXN0YXRzLWFwaTpyZXN0OnB1YmxpYzoqOioiXSwicm9sZXMiOlsicmVhZGVyIl0sInJlc291cmNlcyI6WyIqOiRVU0VSX0lEJDoqIl19LHsibWV0aG9kcyI6WyJyaXNrLW1hbmFnZW1lbnQtYXBpOnJlc3Q6cHVibGljOio6KiJdLCJyb2xlcyI6WyJyZWFkZXIiLCJ3cml0ZXIiXSwicmVzb3VyY2VzIjpbIio6JFVTRVJfSUQkOioiXX0seyJtZXRob2RzIjpbImNvcHlmYWN0b3J5LWFwaTpyZXN0OnB1YmxpYzoqOioiXSwicm9sZXMiOlsicmVhZGVyIiwid3JpdGVyIl0sInJlc291cmNlcyI6WyIqOiRVU0VSX0lEJDoqIl19LHsibWV0aG9kcyI6WyJtdC1tYW5hZ2VyLWFwaTpyZXN0OmRlYWxpbmc6KjoqIiwibXQtbWFuYWdlci1hcGk6cmVzdDpwdWJsaWM6KjoqIl0sInJvbGVzIjpbInJlYWRlciIsIndyaXRlciJdLCJyZXNvdXJjZXMiOlsiKjokVVNFUl9JRCQ6KiJdfV0sInRva2VuSWQiOiIyMDIxMDIxMyIsImltcGVyc29uYXRlZCI6ZmFsc2UsInJlYWxVc2VySWQiOiIwNDc3MzIwZWJhZTk5YjhhNjMyYzZjNzdlMjc3ZTZlMSIsImlhdCI6MTY4MzM2Mjg5OH0.Msl6xAxDgo_-NycDtxjPxiS-aONYGzTmjh8DnrcbKGcNfoFFrYHU42OlQfDbAU2DBAxnew9nblRP1z7FMx_N49d-6hfj4J74ivb1uWK2xpB7_jr5MYnre5V74t7rxzrihrX6PQSdXCexA3D5UKPDAWJYVtGFitHbsC7pUqx5U8nwpgQ6hGEYt_soTPxCUv2DMeVg9G97kipBfKx8z2sQc0DUi0rvTJYkYtaDvq2RFOUiPIUrr7YwpW2IPob9sdnKRIZYvJa6oxMPSrYNap9HM1GIHu8wrQyr7-C-umOqkJYbty4iaZGgusGufVu3oy_-aRUPFdMuvnSN4PdPa5OhsDvaV9-dxwlBWdf9m178--fMvotdbhrTifWVG184oVlaDlI7pDtAuU5VyEg6rmoaKQrL73MiNOM2uj9aORPJPI2XX579jtk9YctuQXRltGrBbPH0ZK1PLY-snaEoAyjbhyGOIb6HpUfCMWGIZeFS53qWQONhDlYDo5s8PiSyytxSklKg5XBDAuur_WuzRNCFCmEpFdoBGAW_mR-3OkrIAWrKC1MfUmvwAqC62VddsqMMfLLBgR_Tswdss7z0xFyaYj3Ef1o3c4kAEXO1H8VkzkuAvO_yt61ZsrUA_1Mv43Op6jZoQ2bJUvMbovPe-aY2AyRCVu_1aNmg4EkYqboqnm0";
+  const defaultData = {
+    hour: 0,
+    day: 0,
+    week: 0,
+    month: 0,
+    ytd: 0,
+  };
+  const [trades, setTrades] = useState([]);
+  const [profits, setProfits] = useState(defaultData);
+  const [win, setWin] = useState(defaultData);
+  const [loss, setLoss] = useState(defaultData);
+  const [points, setPoints] = useState(defaultData);
+
   useEffect(() => {
-    const config = {
-      headers: {
-        "auth-token": token,
-      },
+    const updateState = async () => {
+      try {
+        const {
+          profit: hourProfit,
+          winPercentage: hourWin,
+          lossPercentage: hourLoss,
+          points: hourPoints,
+        } = await lastHourProfit();
+        const {
+          profit: dayProfit,
+          winPercentage: dayWin,
+          lossPercentage: dayLoss,
+          points: dayPoints,
+        } = await lastDayProfit();
+        const {
+          profit: weekProfit,
+          winPercentage: weekWin,
+          lossPercentage: weekLoss,
+          points: weekPoints,
+        } = await lastWeekProfit();
+        const {
+          profit: monthProfit,
+          winPercentage: monthWin,
+          lossPercentage: monthLoss,
+          points: monthPoints,
+        } = await lastMonthProfit();
+        const {
+          profit: yearProfit,
+          winPercentage: yearWin,
+          lossPercentage: yearLoss,
+          points: yearPoints,
+        } = await lastYearProfit();
+
+        setProfits((prevProfits) => ({
+          hour: hourProfit,
+          day: dayProfit,
+          week: weekProfit,
+          month: monthProfit,
+          ytd: yearProfit,
+        }));
+        setWin((prevWin) => ({
+          hour: hourWin,
+          day: dayWin,
+          week: weekWin,
+          month: monthWin,
+          ytd: yearWin,
+        }));
+        setLoss((prevLoss) => ({
+          hour: hourLoss,
+          day: dayLoss,
+          week: weekLoss,
+          month: monthLoss,
+          ytd: yearLoss,
+        }));
+        const p = {
+          hour: hourPoints,
+          day: dayPoints,
+          week: weekPoints,
+          month: monthPoints,
+          ytd: yearPoints,
+        };
+        setPoints((prevPoints) => p);
+        setGraphData((prevGraph) => ({
+          labels: fiveTabs.map((data) => data),
+          datasets: [
+            {
+              label: "Points Earned",
+              data: fiveTabs.map((key) => p[key.toLowerCase()]),
+              backgroundColor: [
+                "rgb(233 129 72)",
+                "rgb(233 122 62)",
+                "rgb(235 112 46)",
+                "rgb(233 106 37)",
+                "rgb(234 104 40)",
+              ],
+            },
+          ],
+        }));
+      } catch (error) {
+        console.error("Error:", error);
+      }
     };
-    // lastYearProfit(config);
-    // lastMonthProfit(config);
-    // lastHourProfit(config);
-    // lastWeekProfit(config);
-    // lastDayProfit(config);
-    // getTrades(config);
+    updateState();
   }, []);
 
-  const getTrades = async (config) => {
-    axios
-      .get(
-        `https://metastats-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/open-trades`,
-        config
-      )
-      .then((res) => {
-        console.log(res.data);
-        setTrades(res.data);
-      });
-  };
+  const [account, setAccount] = useState({
+    name: "",
+    balance: 0,
+  });
+  useEffect(() => {
+    const updateBalance = async () => {
+      const acc = await getAccountInfo();
+      setAccount(acc);
+    };
+    updateBalance();
+  }, []);
+
+  useEffect(() => {
+    const getCurrent = async () => {
+      const trades = await getTrades();
+      setTrades(trades);
+    };
+    getCurrent();
+  }, []);
+
+  const [bestTimeFrame, setBestTimeFrame] = useState({
+    month1: "",
+    month2: "",
+  });
+  useEffect(() => {
+    const getTime = async () => {
+      const bestTime = await getBestTimeFrame();
+      setBestTimeFrame(bestTime);
+    };
+    getTime();
+  }, []);
 
   const fiveTabs = ["Hour", "Day", "Week", "Month", "YTD"];
-  // This includes names of accounts
-  const accounts = [
-    "a1",
-    "a2",
-    "a3",
-    "a4",
-    "a5",
-    "a6",
-    "a7",
-    "a8",
-    "a9",
-    "a10",
-  ];
 
-  const graph = [
-    {
-      name: "Hourly",
-      points: 50,
-    },
-    {
-      name: "Daily",
-      points: 100,
-    },
-    {
-      name: "Weekly",
-      points: 150,
-    },
-    {
-      name: "Monthly",
-      points: 250,
-    },
-    {
-      name: "Yearly",
-      points: 550,
-    },
-  ];
   const [graphData, setGraphData] = useState({
-    labels: graph.map((data) => data.name),
+    labels: fiveTabs.map((data) => data),
     datasets: [
       {
         label: "Points Earned",
-        data: graph.map((data) => data.points),
+        data: fiveTabs.map((key) => points[key.toLowerCase()]),
         backgroundColor: [
           "rgb(233 129 72)",
           "rgb(233 122 62)",
@@ -278,29 +170,21 @@ function App() {
       <div className="w-11/12 mx-auto py-6">
         <h1 className="font-bold text-5xl mb-7">Dashboard</h1>
         {/* First Row */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
           <Box
             title={"Profit"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 100 }}
+            data={profits}
             tabs={fiveTabs}
+            currency={true}
           />
-
-          <Box
+          {/* <Box
             title={"PTS"}
             data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
             tabs={fiveTabs}
-          />
-          <Box
-            title={"Win %"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-          />
-          <Box
-            title={"Loss %"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-          />
-          <Box
+          /> */}
+          <Box title={"Win %"} data={win} tabs={fiveTabs} percentage={true} />
+          <Box title={"Loss %"} data={loss} tabs={fiveTabs} percentage={true} />
+          {/* <Box
             title={"Balance"}
             data={{
               a1: 10,
@@ -315,36 +199,48 @@ function App() {
               a10: 100,
             }}
             tabs={accounts}
+            currency={true}
           />
           <Box
             title={"All Accounts Trades"}
             data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
             tabs={fiveTabs}
-          />
+            currency={true}
+          /> */}
         </div>
-        {trades && <CurrentTrades trades={trades} />}
+        {trades ? (
+          <CurrentTrades trades={trades} />
+        ) : (
+          <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
+            <p>There are no current trades</p>
+          </div>
+        )}
         {/* Last Row */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-          <Box
-            title={"Account Balance"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-          />
-          <Box
-            title={"Points"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-          />
-          <Box
-            title={"Best Account"}
-            data={{ hour: "a", day: "b", week: "c", month: "d", ytd: "e" }}
-            tabs={fiveTabs}
-          />
+          <div className="bg-white p-4 rounded-lg w-full h-full ">
+            <h2 className="font-semibold text-orange-400 text-lg">
+              Account Balance
+            </h2>
+            <p className="text-5xl font-bold text-gray-700 mt-3">
+              {account.balance}
+            </p>
+          </div>
+          <Box title={"Points"} data={points} tabs={fiveTabs} />
+          <div className="bg-white p-4 rounded-lg w-full h-full ">
+            <h2 className="font-semibold text-orange-400 text-lg">
+              Account Name
+            </h2>
+            <p className="text-3xl font-bold text-gray-700 mt-3">
+              {account.name}
+            </p>
+          </div>
           <div className="bg-white p-4 rounded-lg w-full h-full ">
             <h2 className="font-semibold text-orange-400 text-lg">
               Best Timeframe
             </h2>
-            <p className="text-3xl font-bold text-gray-700 mt-3">March-April</p>
+            <p className="text-3xl font-bold text-gray-700 mt-3">
+              {bestTimeFrame.month1}-{bestTimeFrame.month2}
+            </p>
           </div>
         </div>
         <Graphs title={"Graphs"} data={graphData} />
