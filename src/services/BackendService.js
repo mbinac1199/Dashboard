@@ -36,12 +36,18 @@ const lastDayProfit = async () => {
 };
 
 const lastWeekProfit = async () => {
-  const lastWeek = new Date();
-  lastWeek.setDate(lastWeek.getDate() - 7);
-  const isoLastWeek = lastWeek.toISOString();
+  const currentDate = new Date();
+  const currentDayOfWeek = currentDate.getDay();
+  const daysToSubtract = currentDayOfWeek + 6;
+  const mondayOfLastWeek = new Date(currentDate);
+  mondayOfLastWeek.setDate(currentDate.getDate() - daysToSubtract);
+  const sundayOfLastWeek = new Date(mondayOfLastWeek);
+  sundayOfLastWeek.setDate(mondayOfLastWeek.getDate() + 6);
+  const isomonday = mondayOfLastWeek.toISOString();
+  const isosunday = sundayOfLastWeek.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoLastWeek}/${isoDateTime}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isomonday}/${isosunday}`,
       Config
     );
     return ExtractData(response);
@@ -51,12 +57,17 @@ const lastWeekProfit = async () => {
 };
 
 const lastMonthProfit = async () => {
-  const lastMonth = new Date();
-  lastMonth.setMonth(lastMonth.getMonth() - 1);
-  const isoLastMonth = lastMonth.toISOString();
+  const currentDate = new Date();
+  currentDate.setDate(1);
+  currentDate.setDate(currentDate.getDate() - 1);
+  const lastDayOfPreviousMonth = new Date(currentDate);
+  currentDate.setDate(1);
+  const firstDayOfPreviousMonth = new Date(currentDate);
+  const isoFirstDay = firstDayOfPreviousMonth.toISOString();
+  const isoLastDay = lastDayOfPreviousMonth.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoLastMonth}/${isoDateTime}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoFirstDay}/${isoLastDay}`,
       Config
     );
     return ExtractData(response);
@@ -66,12 +77,16 @@ const lastMonthProfit = async () => {
 };
 
 const lastYearProfit = async () => {
-  const lastYear = new Date();
-  lastYear.setFullYear(lastYear.getFullYear() - 1);
-  const isoLastYear = lastYear.toISOString();
+  const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
+  const previousYear = currentYear - 1;
+  const januaryFirst = new Date(previousYear, 0, 1);
+  const decemberThirtyFirst = new Date(previousYear, 11, 31);
+  const isoFirst = januaryFirst.toISOString();
+  const isoLast = decemberThirtyFirst.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoLastYear}/${isoDateTime}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoFirst}/${isoLast}`,
       Config
     );
     return ExtractData(response);
@@ -82,11 +97,29 @@ const lastYearProfit = async () => {
 
 const getTrades = async () => {
   try {
-    const response = await axios.get(
+    const response1 = await axios.get(
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/orders`,
+      Config
+    );
+    const response2 = await axios.get(
       `https://metastats-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/open-trades`,
       Config
     );
-    return response.data.openTrades;
+    const mergedArray = response1.data.reduce((result, obj1) => {
+      const obj2 = response2.data.openTrades.find((obj) => obj._id === obj1.id);
+      if (obj2) {
+        result.push({ ...obj1, ...obj2 });
+      }
+      return result;
+    }, []);
+    const mergedArray2 = mergedArray.map(async (obj) => {
+      const response3 = await axios.get(
+        `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/symbols/${obj.symbol}/current-tick`,
+        Config
+      );
+      return { ...obj, ...response3.data };
+    });
+    return mergedArray2;
   } catch (error) {
     console.error("Error fetching data:", error);
   }

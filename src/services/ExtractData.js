@@ -17,7 +17,7 @@ export default (data) => {
     lossCount = 0;
   data.data.forEach((order) => {
     profit += order.profit;
-    if (order.profit > 0) winCount++;
+    if (order.profit >= 0) winCount++;
     else if (order.profit < 0) lossCount++;
   });
   const total = data.data.length;

@@ -8,7 +8,7 @@ function Box({ title, data, tabs, currency, percentage }) {
       <h2 className="font-semibold text-orange-400 text-lg">{title}</h2>
       <p className="text-5xl font-bold text-gray-700 mt-3">
         {currency && "$"}
-        {isNaN(data[current]) ? data[current] : Math.floor(data[current])}
+        {isNaN(data[current]) ? data[current] : data[current].toFixed(1)}
         {percentage && "%"}
       </p>
       <Tabs tabs={tabs} current={current} setCurrent={setCurrent} />

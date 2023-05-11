@@ -1,7 +1,25 @@
 import React, { useState } from "react";
+import { useEffect } from "react";
+import { getTrades } from "../services/BackendService";
 
-function CurrentTrades({ trades }) {
+function CurrentTrades(balance) {
+  const [trades, setTrades] = useState([]);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const updateTrades = async () => {
+      const trades = await getTrades();
+      setTrades(trades);
+      setLoading(false);
+    };
+    updateTrades();
+  }, []);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  if (loading)
+    return (
+      <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
+        <p>Loading current trades</p>
+      </div>
+    );
   if (trades.length == 0 || !trades)
     return (
       <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
@@ -14,9 +32,10 @@ function CurrentTrades({ trades }) {
       <h3 className="font-semibold text-2xl mt-2">Trade {selectedIndex + 1}</h3>
       <div className="flex space-x-2 items-center">
         <p className="text-gray-900 font-semibold">
-          {trades[selectedIndex]?.type === "POSITION_TYPE_BUY"
-            ? "Buying"
-            : "Selling"}
+          {trades[selectedIndex]?.type === "ORDER_TYPE_SELL" ||
+          trades[selectedIndex]?.type === "POSITION_TYPE_SELL"
+            ? "Selling"
+            : "Buying"}
         </p>
         <p
           className={`font-bold ${
@@ -28,39 +47,52 @@ function CurrentTrades({ trades }) {
       </div>
       <div className="mt-1 grid lg:grid-cols-3 text-gray-600">
         <p>
-          <span className="font-medium">Account: </span>
-          {trades[selectedIndex].accountId}
+          <span className="font-medium">Trade No: </span>
+          {trades[selectedIndex].id}
         </p>
         <p>
-          <span className="font-medium">Order: </span>
-          {trades[selectedIndex]._id}
+          <span className="font-medium">Pair or Indice: </span>
+          US500
         </p>
         <p>
-          <span className="font-medium">Entry Price: </span>$
+          <span className="font-medium">Time Opened: </span>
+          {trades[selectedIndex].openTime}
+        </p>
+        <p>
+          <span className="font-medium">Open Price: </span>$
           {trades[selectedIndex].openPrice}
-        </p>
-        {/* <p>
-          <span className="font-medium">S/L: </span>
-          {trades[selectedIndex].sl}
         </p>
         <p>
           <span className="font-medium">T/P: </span>
-          {trades[selectedIndex].tp}
+          {trades[selectedIndex].takeProfit}
+        </p>
+        <p>
+          <span className="font-medium">S/L: </span>
+          {trades[selectedIndex].stopLoss}
+        </p>
+        <p>
+          <span className="font-medium">Lot Size: </span>
+          {(balance * trades[selectedIndex].riskInBalancePercent) /
+            (trades[selectedIndex].stopLoss * trades[selectedIndex].pips) || 0}
         </p>
         <p>
           <span className="font-medium">Current Price: </span>$
           {trades[selectedIndex].currentPrice}
         </p>
         <p>
-          <span className="font-medium">Expert Advisor: </span>
-          {trades[selectedIndex].advisor}
-        </p> */}
-        {/* <p>
-          <span className="font-medium">Estimated Profit: </span>
-          {trades[selectedIndex].estimatedProfit}
-        </p> */}
+          <span className="font-medium">Profit: </span>$
+          {trades[selectedIndex].profit}
+        </p>
         <p>
-          <span className="font-medium">Running Time in Trade: </span>
+          <span className="font-medium">Net PTS: </span>$
+          {trades[selectedIndex].bid - trades[selectedIndex].openPrice}
+        </p>
+        <p>
+          <span className="font-medium">Status: </span>
+          {trades[selectedIndex].state}
+        </p>
+        <p>
+          <span className="font-medium">Time in Trade: </span>
           {trades[selectedIndex].durationInMinutes} minutes
         </p>
       </div>

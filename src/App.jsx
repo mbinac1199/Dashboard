@@ -15,6 +15,7 @@ import {
 } from "./services/BackendService";
 
 function App() {
+  const fiveTabs = ["Hour", "Day", "Week", "Month", "YTD"];
   const defaultData = {
     hour: 0,
     day: 0,
@@ -22,12 +23,10 @@ function App() {
     month: 0,
     ytd: 0,
   };
-  const [trades, setTrades] = useState([]);
   const [profits, setProfits] = useState(defaultData);
   const [win, setWin] = useState(defaultData);
   const [loss, setLoss] = useState(defaultData);
   const [points, setPoints] = useState(defaultData);
-
   useEffect(() => {
     const updateState = async () => {
       try {
@@ -119,19 +118,12 @@ function App() {
     balance: 0,
   });
   useEffect(() => {
-    const updateBalance = async () => {
+    const updateAccount = async () => {
       const acc = await getAccountInfo();
       setAccount(acc);
+      document.title = acc.name + "'s Dashboard";
     };
-    updateBalance();
-  }, []);
-
-  useEffect(() => {
-    const getCurrent = async () => {
-      const trades = await getTrades();
-      setTrades(trades);
-    };
-    getCurrent();
+    updateAccount();
   }, []);
 
   const [bestTimeFrame, setBestTimeFrame] = useState({
@@ -141,12 +133,11 @@ function App() {
   useEffect(() => {
     const getTime = async () => {
       const bestTime = await getBestTimeFrame();
+      console.log(bestTime);
       setBestTimeFrame(bestTime);
     };
     getTime();
   }, []);
-
-  const fiveTabs = ["Hour", "Day", "Week", "Month", "YTD"];
 
   const [graphData, setGraphData] = useState({
     labels: fiveTabs.map((data) => data),
@@ -177,44 +168,10 @@ function App() {
             tabs={fiveTabs}
             currency={true}
           />
-          {/* <Box
-            title={"PTS"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-          /> */}
           <Box title={"Win %"} data={win} tabs={fiveTabs} percentage={true} />
           <Box title={"Loss %"} data={loss} tabs={fiveTabs} percentage={true} />
-          {/* <Box
-            title={"Balance"}
-            data={{
-              a1: 10,
-              a2: 20,
-              a3: 30,
-              a4: 40,
-              a5: 50,
-              a6: 60,
-              a7: 70,
-              a8: 80,
-              a9: 90,
-              a10: 100,
-            }}
-            tabs={accounts}
-            currency={true}
-          />
-          <Box
-            title={"All Accounts Trades"}
-            data={{ hour: 25, day: 50, week: 80, month: 100, ytd: 150 }}
-            tabs={fiveTabs}
-            currency={true}
-          /> */}
         </div>
-        {trades ? (
-          <CurrentTrades trades={trades} />
-        ) : (
-          <div className="w-full bg-white rounded-lg my-6 px-4 py-5">
-            <p>There are no current trades</p>
-          </div>
-        )}
+        <CurrentTrades balance={account.balance} />
         {/* Last Row */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
           <div className="bg-white p-4 rounded-lg w-full h-full ">
