@@ -24,5 +24,5 @@ export default (data) => {
   const winPercentage = (winCount / total) * 100 || 0;
   const lossPercentage = (lossCount / total) * 100 || 0;
   const points = profit / total || 0;
-  return { profit, winPercentage, lossPercentage, points };
+  return { profit, winPercentage, lossPercentage, points, total };
 };

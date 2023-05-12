@@ -27,6 +27,7 @@ function App() {
   const [win, setWin] = useState(defaultData);
   const [loss, setLoss] = useState(defaultData);
   const [points, setPoints] = useState(defaultData);
+  const [total, setTotal] = useState(defaultData);
   useEffect(() => {
     const updateState = async () => {
       try {
@@ -35,30 +36,35 @@ function App() {
           winPercentage: hourWin,
           lossPercentage: hourLoss,
           points: hourPoints,
+          total: hourTotal,
         } = await lastHourProfit();
         const {
           profit: dayProfit,
           winPercentage: dayWin,
           lossPercentage: dayLoss,
           points: dayPoints,
+          total: dayTotal,
         } = await lastDayProfit();
         const {
           profit: weekProfit,
           winPercentage: weekWin,
           lossPercentage: weekLoss,
           points: weekPoints,
+          total: weekTotal,
         } = await lastWeekProfit();
         const {
           profit: monthProfit,
           winPercentage: monthWin,
           lossPercentage: monthLoss,
           points: monthPoints,
+          total: monthTotal,
         } = await lastMonthProfit();
         const {
           profit: yearProfit,
           winPercentage: yearWin,
           lossPercentage: yearLoss,
           points: yearPoints,
+          total: yearTotal,
         } = await lastYearProfit();
 
         setProfits((prevProfits) => ({
@@ -90,6 +96,13 @@ function App() {
           ytd: yearPoints,
         };
         setPoints((prevPoints) => p);
+        setTotal((prevTotal) => ({
+          hour: hourTotal,
+          day: dayTotal,
+          week: weekTotal,
+          month: monthTotal,
+          ytd: yearTotal,
+        }));
         setGraphData((prevGraph) => ({
           labels: fiveTabs.map((data) => data),
           datasets: [
@@ -161,7 +174,7 @@ function App() {
       <div className="w-11/12 mx-auto py-6">
         <h1 className="font-bold text-5xl mb-7">Dashboard</h1>
         {/* First Row */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
           <Box
             title={"Profit"}
             data={profits}
@@ -170,6 +183,12 @@ function App() {
           />
           <Box title={"Win %"} data={win} tabs={fiveTabs} percentage={true} />
           <Box title={"Loss %"} data={loss} tabs={fiveTabs} percentage={true} />
+          <Box
+            title={"No of Trades"}
+            data={total}
+            tabs={fiveTabs}
+            noDecimal={true}
+          />
         </div>
         <CurrentTrades balance={account.balance} />
         {/* Last Row */}
@@ -179,7 +198,7 @@ function App() {
               Account Balance
             </h2>
             <p className="text-5xl font-bold text-gray-700 mt-3">
-              {account.balance}
+              {account?.balance.toFixed(1)}
             </p>
           </div>
           <Box title={"Points"} data={points} tabs={fiveTabs} />
@@ -188,7 +207,7 @@ function App() {
               Account Name
             </h2>
             <p className="text-3xl font-bold text-gray-700 mt-3">
-              {account.name}
+              {account?.name}
             </p>
           </div>
           <div className="bg-white p-4 rounded-lg w-full h-full ">
@@ -196,7 +215,7 @@ function App() {
               Best Timeframe
             </h2>
             <p className="text-3xl font-bold text-gray-700 mt-3">
-              {bestTimeFrame.month1}-{bestTimeFrame.month2}
+              {bestTimeFrame?.month1}-{bestTimeFrame?.month2}
             </p>
           </div>
         </div>

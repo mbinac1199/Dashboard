@@ -2,7 +2,7 @@ import axios from "axios";
 import ExtractData from "./ExtractData";
 import Config from "./Config";
 
-const account = "929f666e-a469-4256-817f-89cfbc11cd8a";
+const account = "e63657fc-e411-430e-b1c0-449094ea1e56";
 const isoDateTime = new Date().toISOString();
 
 const lastHourProfit = async () => {
@@ -50,6 +50,7 @@ const lastWeekProfit = async () => {
       `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isomonday}/${isosunday}`,
       Config
     );
+
     return ExtractData(response);
   } catch (error) {
     console.error("Error fetching data:", error);
@@ -77,16 +78,13 @@ const lastMonthProfit = async () => {
 };
 
 const lastYearProfit = async () => {
-  const currentDate = new Date();
-  const currentYear = currentDate.getFullYear();
-  const previousYear = currentYear - 1;
-  const januaryFirst = new Date(previousYear, 0, 1);
-  const decemberThirtyFirst = new Date(previousYear, 11, 31);
-  const isoFirst = januaryFirst.toISOString();
-  const isoLast = decemberThirtyFirst.toISOString();
+  const firstDayOfYear = new Date(new Date().getFullYear(), 0, 1);
+  const today = new Date();
+  const isoFirstDay = firstDayOfYear.toISOString();
+  const isoToday = today.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoFirst}/${isoLast}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoFirstDay}/${isoToday}`,
       Config
     );
     return ExtractData(response);
