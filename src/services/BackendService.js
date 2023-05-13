@@ -6,12 +6,22 @@ const account = "e63657fc-e411-430e-b1c0-449094ea1e56";
 const isoDateTime = new Date().toISOString();
 
 const lastHourProfit = async () => {
-  const lastHour = new Date();
-  lastHour.setHours(lastHour.getHours() - 1);
-  const isoLastHour = lastHour.toISOString();
+  var currentTime = new Date();
+  var startingTimeLastHour = new Date(currentTime);
+  startingTimeLastHour.setMinutes(0);
+  startingTimeLastHour.setSeconds(0);
+  startingTimeLastHour.setMilliseconds(0);
+  startingTimeLastHour.setHours(startingTimeLastHour.getHours() - 1);
+  var endingTimeLastHour = new Date(currentTime);
+  endingTimeLastHour.setMinutes(59);
+  endingTimeLastHour.setSeconds(59);
+  endingTimeLastHour.setMilliseconds(999);
+  endingTimeLastHour.setHours(endingTimeLastHour.getHours() - 1);
+  const isoStart = startingTimeLastHour.toISOString();
+  const isoEnd = endingTimeLastHour.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoLastHour}/${isoDateTime}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoStart}/${isoEnd}`,
       Config
     );
     return ExtractData(response);
@@ -21,12 +31,30 @@ const lastHourProfit = async () => {
 };
 
 const lastDayProfit = async () => {
-  const lastDay = new Date();
-  lastDay.setDate(lastDay.getDate() - 1);
-  const isoLastDay = lastDay.toISOString();
+  var today = new Date();
+  var yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  var startingTimeYesterday = new Date(
+    yesterday.getFullYear(),
+    yesterday.getMonth(),
+    yesterday.getDate(),
+    0,
+    0,
+    0
+  );
+  var endingTimeYesterday = new Date(
+    yesterday.getFullYear(),
+    yesterday.getMonth(),
+    yesterday.getDate(),
+    23,
+    59,
+    59
+  );
+  const isoStart = startingTimeYesterday.toISOString();
+  const isoEnd = endingTimeYesterday.toISOString();
   try {
     const response = await axios.get(
-      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoLastDay}/${isoDateTime}`,
+      `https://mt-client-api-v1.new-york.agiliumtrade.ai/users/current/accounts/${account}/history-deals/time/${isoStart}/${isoEnd}`,
       Config
     );
     return ExtractData(response);

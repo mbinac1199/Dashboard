@@ -14,13 +14,16 @@ export default (data) => {
 
   let profit = 0,
     winCount = 0,
-    lossCount = 0;
+    lossCount = 0,
+    total = 0;
   data.data.forEach((order) => {
-    profit += order.profit;
-    if (order.profit >= 0) winCount++;
-    else if (order.profit < 0) lossCount++;
+    if (order.type != "DEAL_TYPE_BALANCE") {
+      total++;
+      profit += order.profit;
+      if (order.profit >= 0) winCount++;
+      else if (order.profit < 0) lossCount++;
+    }
   });
-  const total = data.data.length;
   const winPercentage = (winCount / total) * 100 || 0;
   const lossPercentage = (lossCount / total) * 100 || 0;
   const points = profit / total || 0;

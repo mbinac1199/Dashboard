@@ -66,28 +66,30 @@ function App() {
           points: yearPoints,
           total: yearTotal,
         } = await lastYearProfit();
-
-        setProfits((prevProfits) => ({
+        const prof = {
           hour: hourProfit,
           day: dayProfit,
           week: weekProfit,
           month: monthProfit,
           ytd: yearProfit,
-        }));
-        setWin((prevWin) => ({
+        };
+        setProfits((prevProfits) => prof);
+        const w = {
           hour: hourWin,
           day: dayWin,
           week: weekWin,
           month: monthWin,
           ytd: yearWin,
-        }));
-        setLoss((prevLoss) => ({
+        };
+        setWin((prevWin) => w);
+        const l = {
           hour: hourLoss,
           day: dayLoss,
           week: weekLoss,
           month: monthLoss,
           ytd: yearLoss,
-        }));
+        };
+        setLoss((prevLoss) => l);
         const p = {
           hour: hourPoints,
           day: dayPoints,
@@ -96,25 +98,37 @@ function App() {
           ytd: yearPoints,
         };
         setPoints((prevPoints) => p);
-        setTotal((prevTotal) => ({
+        const t = {
           hour: hourTotal,
           day: dayTotal,
           week: weekTotal,
           month: monthTotal,
           ytd: yearTotal,
-        }));
+        };
+        setTotal((prevTotal) => t);
         setGraphData((prevGraph) => ({
           labels: fiveTabs.map((data) => data),
           datasets: [
             {
-              label: "Points Earned",
-              data: fiveTabs.map((key) => p[key.toLowerCase()]),
+              label: "Profit",
+              data: fiveTabs.map((key) => prof[key.toLowerCase()]),
               backgroundColor: [
                 "rgb(233 129 72)",
                 "rgb(233 122 62)",
                 "rgb(235 112 46)",
                 "rgb(233 106 37)",
                 "rgb(234 104 40)",
+              ],
+            },
+            {
+              label: "No of Trades",
+              data: fiveTabs.map((key) => t[key.toLowerCase()]),
+              backgroundColor: [
+                "rgb(89 138 243)",
+                "rgb(71 125 241)",
+                "rgb(59 117 243)",
+                "rgb(49 110 240)",
+                "rgb(37 99 235)",
               ],
             },
           ],
@@ -146,7 +160,6 @@ function App() {
   useEffect(() => {
     const getTime = async () => {
       const bestTime = await getBestTimeFrame();
-      console.log(bestTime);
       setBestTimeFrame(bestTime);
     };
     getTime();
@@ -198,7 +211,7 @@ function App() {
               Account Balance
             </h2>
             <p className="text-5xl font-bold text-gray-700 mt-3">
-              {account?.balance.toFixed(1)}
+              ${account?.balance.toFixed(1)}
             </p>
           </div>
           <Box title={"Points"} data={points} tabs={fiveTabs} />
